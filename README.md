@@ -124,4 +124,4 @@ single-client-hub/
 
 ## License
 
-Proprietary / project use — Lumavita / Client Hub.
+Proprietary / project use —  Client Hub.
