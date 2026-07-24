@@ -1,0 +1,434 @@
+/**
+ * Single Client Hub — frontend
+ */
+
+:root {
+  --sch-bg: #1c1917;
+  --sch-surface: #292524;
+  --sch-ink: #fafaf9;
+  --sch-muted: #a8a29e;
+  --sch-accent: #0d9488;
+  --sch-accent-2: #f59e0b;
+  --sch-danger: #e11d48;
+  --sch-radius: 14px;
+  --sch-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  --sch-font: "Segoe UI", "Candara", "Gill Sans", sans-serif;
+}
+
+.sch-hub-root {
+  z-index: 99999;
+  font-family: var(--sch-font);
+}
+
+/* Header placement: panel/backdrop as fixed overlay portal */
+.sch-hub-root--portal {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sch-hub-root--portal[data-open="1"] .sch-hub-backdrop,
+.sch-hub-root--portal .sch-hub-panel:not([hidden]) {
+  pointer-events: auto;
+}
+
+/* Fallback when theme has no mini-cart slot */
+.sch-hub-root--floating {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+}
+
+.sch-hub-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--sch-accent), color-mix(in srgb, var(--sch-accent) 65%, var(--sch-bg) 35%));
+  color: var(--sch-ink);
+  box-shadow: var(--sch-shadow);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  vertical-align: middle;
+}
+
+.sch-hub-trigger--header {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.sch-hub-trigger:hover,
+.sch-hub-trigger:focus-visible {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 12px 28px rgba(13, 148, 136, 0.35);
+  outline: none;
+}
+
+.sch-hub-trigger__icon {
+  display: flex;
+  line-height: 0;
+}
+
+.sch-hub-badge {
+  position: absolute;
+  top: -0.2rem;
+  right: -0.2rem;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--sch-accent-2);
+  color: #1c1917;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.sch-hub-badge[hidden] {
+  display: none !important;
+}
+
+.sch-hub-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 25, 23, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 0;
+  animation: schFade 0.25s ease;
+  pointer-events: auto;
+}
+
+.sch-hub-panel {
+  position: fixed;
+  top: 4.5rem;
+  right: 1rem;
+  width: min(380px, calc(100vw - 2rem));
+  max-height: min(70vh, 560px);
+  display: flex;
+  flex-direction: column;
+  background: var(--sch-surface);
+  color: var(--sch-ink);
+  border-radius: var(--sch-radius);
+  box-shadow: var(--sch-shadow);
+  overflow: hidden;
+  animation: schDrop 0.28s ease;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.sch-hub-root--floating .sch-hub-panel {
+  position: absolute;
+  top: auto;
+  right: 0;
+  bottom: calc(100% + 0.75rem);
+  animation: schRise 0.28s ease;
+}
+
+.sch-hub-root--floating .sch-hub-backdrop {
+  z-index: -1;
+}
+
+.sch-hub-panel[hidden] {
+  display: none !important;
+}
+
+.sch-hub-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 0.85rem;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sch-surface) 92%, #fff 8%), var(--sch-surface));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sch-hub-tabs {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.sch-hub-tab {
+  border: 0;
+  background: transparent;
+  color: var(--sch-muted);
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sch-hub-tab.is-active {
+  background: color-mix(in srgb, var(--sch-accent) 28%, transparent);
+  color: var(--sch-ink);
+}
+
+.sch-hub-close {
+  border: 0;
+  background: transparent;
+  color: var(--sch-muted);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sch-hub-panel__body {
+  overflow: auto;
+  padding: 0.85rem;
+}
+
+.sch-hub-pane[hidden] {
+  display: none !important;
+}
+
+.sch-hub-loading {
+  color: var(--sch-muted);
+  padding: 1rem 0;
+}
+
+.sch-cart-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.5rem 0.75rem;
+  align-items: start;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sch-cart-item__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-top: 0.1rem;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #fda4af;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sch-cart-item__remove:hover,
+.sch-cart-item__remove:focus-visible {
+  background: rgba(225, 29, 72, 0.15);
+  color: #fecdd3;
+  outline: none;
+}
+
+.sch-cart-item__body {
+  min-width: 0;
+}
+
+.sch-cart-item__price {
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sch-cart-item__name {
+  font-weight: 600;
+}
+
+.sch-cart-item__meta {
+  color: var(--sch-muted);
+  font-size: 0.85rem;
+}
+
+.sch-cart-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.85rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.sch-coupons {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.sch-coupons__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+}
+
+.sch-chip {
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  background: rgba(245, 158, 11, 0.12);
+  color: #1a1a1a;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sch-coupon-form {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.sch-coupon-form input {
+  flex: 1;
+  border-radius: 8px;
+  border: 1px solid var(--sch-accent);
+  background: var(--sch-bg);
+  color: var(--sch-ink);
+  padding: 0.45rem 0.6rem;
+}
+
+.sch-coupon-form button,
+.sch-btn {
+  border: 0;
+  border-radius: 8px;
+  background: var(--sch-accent);
+  color: #fff;
+  padding: 0.45rem 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sch-btn--ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--sch-ink);
+}
+
+.sch-btn--danger {
+  background: var(--sch-danger);
+}
+
+.sch-hub-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.sch-hub-actions a {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  padding: 0.55rem;
+  border-radius: 8px;
+  background: var(--sch-accent);
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.sch-hub-actions a.secondary {
+  background: transparent;
+  border: 1px solid var(--sch-accent);
+  color: var(--sch-accent) !important;
+}
+
+.sch-order-row,
+.sch-sub-row {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sch-order-row__top,
+.sch-sub-row__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.sch-status {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sch-accent) 22%, transparent);
+  color: color-mix(in srgb, var(--sch-accent) 55%, var(--sch-ink) 45%);
+}
+
+.sch-order-row__actions,
+.sch-sub-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.sch-order-row__actions button,
+.sch-sub-row__actions button {
+  font-size: 0.78rem;
+  padding: 0.3rem 0.55rem;
+}
+
+.sch-msg {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.sch-msg--error {
+  color: #fda4af;
+}
+
+.sch-msg--ok {
+  color: #6ee7b7;
+}
+
+.sch-muted {
+  color: var(--sch-muted);
+}
+
+.sch-empty {
+  color: var(--sch-muted);
+  padding: 1rem 0;
+}
+
+@keyframes schRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes schDrop {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes schFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .sch-hub-root--floating {
+    right: 0.75rem;
+    bottom: 0.75rem;
+  }
+  .sch-hub-panel {
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+  }
+}
