@@ -7,14 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Gateway_Bank_Invoice
- */
 class SCH_Gateway_Bank_Invoice extends WC_Payment_Gateway {
 
-	/**
-	 * Constructor.
-	 */
 	public function __construct() {
 		$this->id                 = 'sch_bank_invoice';
 		$this->method_title       = __( 'SCH: Bank invoice', 'single-client-hub' );
@@ -34,9 +28,6 @@ class SCH_Gateway_Bank_Invoice extends WC_Payment_Gateway {
 		add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 3 );
 	}
 
-	/**
-	 * Settings fields.
-	 */
 	public function init_form_fields() {
 		$this->form_fields = array(
 			'enabled'     => array(
@@ -58,12 +49,6 @@ class SCH_Gateway_Bank_Invoice extends WC_Payment_Gateway {
 		);
 	}
 
-	/**
-	 * Process payment — create mock invoice.
-	 *
-	 * @param int $order_id Order ID.
-	 * @return array
-	 */
 	public function process_payment( $order_id ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
@@ -95,12 +80,6 @@ class SCH_Gateway_Bank_Invoice extends WC_Payment_Gateway {
 		);
 	}
 
-	/**
-	 * Mock bank API call.
-	 *
-	 * @param WC_Order $order Order.
-	 * @return array
-	 */
 	private function create_mock_invoice( WC_Order $order ) {
 		$request = array(
 			'merchant'    => get_bloginfo( 'name' ),
@@ -112,7 +91,6 @@ class SCH_Gateway_Bank_Invoice extends WC_Payment_Gateway {
 			'test_mode'   => SCH_Plugin::is_test_mode(),
 		);
 
-		// Simulated outbound API.
 		$response = array(
 			'invoice_id'  => 'INV-' . $order->get_id() . '-' . strtoupper( wp_generate_password( 6, false ) ),
 			'status'      => 'pending',
@@ -137,22 +115,10 @@ class SCH_Gateway_Bank_Invoice extends WC_Payment_Gateway {
 		return $response;
 	}
 
-	/**
-	 * Thank you instructions.
-	 *
-	 * @param int $order_id Order ID.
-	 */
 	public function thankyou_page( $order_id ) {
 		$this->render_instructions( $order_id );
 	}
 
-	/**
-	 * Email instructions.
-	 *
-	 * @param WC_Order $order         Order.
-	 * @param bool     $sent_to_admin Admin.
-	 * @param bool     $plain_text    Plain.
-	 */
 	public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
 		if ( $sent_to_admin || $this->id !== $order->get_payment_method() ) {
 			return;
@@ -160,10 +126,6 @@ class SCH_Gateway_Bank_Invoice extends WC_Payment_Gateway {
 		$this->render_instructions( $order->get_id(), $plain_text );
 	}
 
-	/**
-	 * @param int  $order_id   Order.
-	 * @param bool $plain_text Plain.
-	 */
 	private function render_instructions( $order_id, $plain_text = false ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
