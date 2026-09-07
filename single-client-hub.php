@@ -27,9 +27,6 @@ define( 'SCH_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 require_once SCH_PLUGIN_DIR . 'includes/class-sch-autoloader.php';
 SCH_Autoloader::register();
 
-/**
- * Activation: migrations + defaults + endpoints flush.
- */
 function sch_activate() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		deactivate_plugins( SCH_PLUGIN_BASENAME );
