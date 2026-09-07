@@ -7,27 +7,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Subscription_Cron
- */
 class SCH_Subscription_Cron {
 
 	const HOOK = 'sch_process_subscription_renewals';
 
-	/**
-	 * Init.
-	 */
 	public static function init() {
 		add_action( self::HOOK, array( __CLASS__, 'process' ) );
 		add_filter( 'cron_schedules', array( __CLASS__, 'schedules' ) );
 	}
 
-	/**
-	 * Custom schedule every 15 minutes.
-	 *
-	 * @param array $schedules Schedules.
-	 * @return array
-	 */
 	public static function schedules( $schedules ) {
 		$schedules['sch_fifteen_minutes'] = array(
 			'interval' => 15 * MINUTE_IN_SECONDS,
@@ -36,18 +24,12 @@ class SCH_Subscription_Cron {
 		return $schedules;
 	}
 
-	/**
-	 * Schedule on activate.
-	 */
 	public static function schedule() {
 		if ( ! wp_next_scheduled( self::HOOK ) ) {
 			wp_schedule_event( time() + MINUTE_IN_SECONDS, 'sch_fifteen_minutes', self::HOOK );
 		}
 	}
 
-	/**
-	 * Unschedule on deactivate.
-	 */
 	public static function unschedule() {
 		$timestamp = wp_next_scheduled( self::HOOK );
 		while ( $timestamp ) {
@@ -56,9 +38,6 @@ class SCH_Subscription_Cron {
 		}
 	}
 
-	/**
-	 * Process due subscriptions.
-	 */
 	public static function process() {
 		global $wpdb;
 
@@ -80,11 +59,6 @@ class SCH_Subscription_Cron {
 		}
 	}
 
-	/**
-	 * Renew single subscription.
-	 *
-	 * @param array $sub Subscription row.
-	 */
 	public static function renew_one( array $sub ) {
 		$user_id = (int) $sub['user_id'];
 		$items   = json_decode( $sub['line_items'], true );
@@ -158,13 +132,6 @@ class SCH_Subscription_Cron {
 		}
 	}
 
-	/**
-	 * Attempt mock charge via saved method / gateway.
-	 *
-	 * @param WC_Order $order Order.
-	 * @param array    $sub   Subscription.
-	 * @return bool
-	 */
 	private static function attempt_charge( WC_Order $order, array $sub ) {
 		$request = array(
 			'subscription_id' => (int) $sub['id'],
@@ -176,7 +143,6 @@ class SCH_Subscription_Cron {
 			'test_mode'       => SCH_Plugin::is_test_mode(),
 		);
 
-		// Demo policy: succeed unless last4 ends with 0000 or amount is 0.
 		$success = true;
 		if ( SCH_Plugin::is_test_mode() ) {
 			$force_fail = get_user_meta( (int) $sub['user_id'], 'sch_force_renewal_fail', true );
