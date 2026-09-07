@@ -7,16 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Order_Statuses
- */
 class SCH_Order_Statuses {
 
-	/**
-	 * Status definitions: slug (without wc-) => labels.
-	 *
-	 * @return array<string,array{label:string,label_count:string,public:bool,paid:bool}>
-	 */
 	public static function definitions() {
 		return array(
 			'sch-assembling'   => array(
@@ -58,9 +50,6 @@ class SCH_Order_Statuses {
 		);
 	}
 
-	/**
-	 * Init hooks.
-	 */
 	public static function init() {
 		add_action( 'init', array( __CLASS__, 'register' ), 5 );
 		add_filter( 'wc_order_statuses', array( __CLASS__, 'add_to_list' ) );
@@ -70,9 +59,6 @@ class SCH_Order_Statuses {
 		add_action( 'woocommerce_order_status_changed', array( __CLASS__, 'on_status_changed' ), 10, 4 );
 	}
 
-	/**
-	 * Register post statuses.
-	 */
 	public static function register() {
 		foreach ( self::definitions() as $slug => $def ) {
 			register_post_status(
@@ -89,12 +75,6 @@ class SCH_Order_Statuses {
 		}
 	}
 
-	/**
-	 * Add to WC status dropdown.
-	 *
-	 * @param array $statuses Statuses.
-	 * @return array
-	 */
 	public static function add_to_list( $statuses ) {
 		$new = array();
 		foreach ( $statuses as $key => $label ) {
@@ -113,12 +93,6 @@ class SCH_Order_Statuses {
 		return $new;
 	}
 
-	/**
-	 * Include in reports.
-	 *
-	 * @param array $statuses Statuses.
-	 * @return array
-	 */
 	public static function report_statuses( $statuses ) {
 		foreach ( self::definitions() as $slug => $def ) {
 			if ( ! empty( $def['paid'] ) ) {
@@ -128,12 +102,6 @@ class SCH_Order_Statuses {
 		return $statuses;
 	}
 
-	/**
-	 * Allow payment for invoice / hold.
-	 *
-	 * @param array $statuses Statuses.
-	 * @return array
-	 */
 	public static function valid_for_payment( $statuses ) {
 		$statuses[] = 'sch-invoice';
 		$statuses[] = 'sch-hold';
@@ -142,12 +110,6 @@ class SCH_Order_Statuses {
 		return $statuses;
 	}
 
-	/**
-	 * Paid statuses for WC helpers.
-	 *
-	 * @param array $statuses Statuses.
-	 * @return array
-	 */
 	public static function paid_statuses( $statuses ) {
 		foreach ( self::definitions() as $slug => $def ) {
 			if ( ! empty( $def['paid'] ) ) {
@@ -157,12 +119,6 @@ class SCH_Order_Statuses {
 		return $statuses;
 	}
 
-	/**
-	 * Human label for status slug (with or without wc-).
-	 *
-	 * @param string $status Status.
-	 * @return string
-	 */
 	public static function get_label( $status ) {
 		$status = str_replace( 'wc-', '', $status );
 		$defs   = self::definitions();
@@ -172,14 +128,6 @@ class SCH_Order_Statuses {
 		return wc_get_order_status_name( $status );
 	}
 
-	/**
-	 * On status change — event + email.
-	 *
-	 * @param int      $order_id   Order ID.
-	 * @param string   $from       Old status.
-	 * @param string   $to         New status.
-	 * @param WC_Order $order      Order.
-	 */
 	public static function on_status_changed( $order_id, $from, $to, $order ) {
 		SCH_Plugin::log_event(
 			'order_status_changed',
