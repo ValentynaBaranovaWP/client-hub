@@ -97,9 +97,6 @@ function sch_deactivate() {
 }
 register_deactivation_hook( __FILE__, 'sch_deactivate' );
 
-/**
- * Boot after plugins loaded (WC must exist).
- */
 function sch_bootstrap() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		add_action(
@@ -121,9 +118,6 @@ function sch_bootstrap() {
 }
 add_action( 'plugins_loaded', 'sch_bootstrap', 20 );
 
-/**
- * HPOS / cart-checkout blocks compatibility declarations.
- */
 add_action(
 	'before_woocommerce_init',
 	static function () {
