@@ -7,9 +7,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Plugin
- */
 class SCH_Plugin {
 
 	private static $instance = null;
