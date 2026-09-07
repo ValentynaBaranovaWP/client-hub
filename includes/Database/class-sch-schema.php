@@ -13,14 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Schema
- */
 class SCH_Schema {
 
-	/**
-	 * Create / upgrade tables via dbDelta.
-	 */
 	public static function install() {
 		global $wpdb;
 
@@ -115,12 +109,6 @@ class SCH_Schema {
 		dbDelta( $sql_methods );
 	}
 
-	/**
-	 * Table name helper.
-	 *
-	 * @param string $suffix Table suffix without prefix.
-	 * @return string
-	 */
 	public static function table( $suffix ) {
 		global $wpdb;
 		return $wpdb->prefix . 'sch_' . $suffix;
