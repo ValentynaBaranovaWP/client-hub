@@ -7,14 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Saved_Methods
- */
 class SCH_Saved_Methods {
 
-	/**
-	 * Init.
-	 */
 	public static function init() {
 		add_action( 'woocommerce_account_sch-payment-methods_endpoint', array( __CLASS__, 'render_account_page' ) );
 		add_filter( 'woocommerce_account_menu_items', array( __CLASS__, 'menu_item' ) );
@@ -24,19 +18,10 @@ class SCH_Saved_Methods {
 		add_action( 'wp_ajax_sch_add_saved_method', array( __CLASS__, 'ajax_add_mock' ) );
 	}
 
-	/**
-	 * Rewrite endpoint.
-	 */
 	public static function add_endpoint() {
 		add_rewrite_endpoint( 'sch-payment-methods', EP_ROOT | EP_PAGES );
 	}
 
-	/**
-	 * My Account menu.
-	 *
-	 * @param array $items Items.
-	 * @return array
-	 */
 	public static function menu_item( $items ) {
 		$new = array();
 		foreach ( $items as $key => $label ) {
@@ -51,12 +36,6 @@ class SCH_Saved_Methods {
 		return $new;
 	}
 
-	/**
-	 * Get methods for user.
-	 *
-	 * @param int $user_id User ID.
-	 * @return array
-	 */
 	public static function get_for_user( $user_id ) {
 		global $wpdb;
 		$rows = $wpdb->get_results(
@@ -67,7 +46,6 @@ class SCH_Saved_Methods {
 			ARRAY_A
 		);
 
-		// Bridge: WooCommerce Stripe tokens if plugin present.
 		if ( class_exists( 'WC_Payment_Tokens' ) ) {
 			$tokens = WC_Payment_Tokens::get_customer_tokens( $user_id, 'stripe' );
 			foreach ( $tokens as $token ) {
@@ -89,13 +67,6 @@ class SCH_Saved_Methods {
 		return $rows ? $rows : array();
 	}
 
-	/**
-	 * Add saved method.
-	 *
-	 * @param int   $user_id User.
-	 * @param array $data    Data.
-	 * @return int|false
-	 */
 	public static function add( $user_id, array $data ) {
 		global $wpdb;
 
@@ -129,13 +100,6 @@ class SCH_Saved_Methods {
 		return $ok ? (int) $wpdb->insert_id : false;
 	}
 
-	/**
-	 * Delete method.
-	 *
-	 * @param int $user_id User.
-	 * @param int $id      Method ID.
-	 * @return bool
-	 */
 	public static function delete( $user_id, $id ) {
 		global $wpdb;
 		return (bool) $wpdb->delete(
@@ -148,12 +112,6 @@ class SCH_Saved_Methods {
 		);
 	}
 
-	/**
-	 * Set default.
-	 *
-	 * @param int $user_id User.
-	 * @param int $id      Method ID.
-	 */
 	public static function set_default( $user_id, $id ) {
 		global $wpdb;
 		$wpdb->update(
@@ -175,18 +133,12 @@ class SCH_Saved_Methods {
 		);
 	}
 
-	/**
-	 * Account page UI.
-	 */
 	public static function render_account_page() {
 		$user_id = get_current_user_id();
 		$methods = self::get_for_user( $user_id );
 		include SCH_PLUGIN_DIR . 'templates/payment-methods.php';
 	}
 
-	/**
-	 * AJAX delete.
-	 */
 	public static function ajax_delete() {
 		check_ajax_referer( 'sch_hub', 'nonce' );
 		$user_id = get_current_user_id();
@@ -198,9 +150,6 @@ class SCH_Saved_Methods {
 		wp_send_json_success();
 	}
 
-	/**
-	 * AJAX set default.
-	 */
 	public static function ajax_set_default() {
 		check_ajax_referer( 'sch_hub', 'nonce' );
 		$user_id = get_current_user_id();
@@ -212,9 +161,6 @@ class SCH_Saved_Methods {
 		wp_send_json_success();
 	}
 
-	/**
-	 * AJAX add mock card.
-	 */
 	public static function ajax_add_mock() {
 		check_ajax_referer( 'sch_hub', 'nonce' );
 		$user_id = get_current_user_id();
