@@ -7,16 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Autoloader
- */
 class SCH_Autoloader {
 
-	/**
-	 * Map class → relative path under includes/.
-	 *
-	 * @var array<string,string>
-	 */
 	private static $map = array(
 		'SCH_Plugin'                => 'class-sch-plugin.php',
 		'SCH_Colors'                => 'class-sch-colors.php',
@@ -39,16 +31,10 @@ class SCH_Autoloader {
 		'SCH_REST'                  => 'Frontend/class-sch-rest.php',
 	);
 
-	/**
-	 * Register spl autoload.
-	 */
 	public static function register() {
 		spl_autoload_register( array( __CLASS__, 'load' ) );
 	}
 
-	/**
-	 * @param string $class Class name.
-	 */
 	public static function load( $class ) {
 		if ( empty( self::$map[ $class ] ) ) {
 			return;
