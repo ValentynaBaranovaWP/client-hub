@@ -12,14 +12,8 @@ defined( 'ABSPATH' ) || exit;
  */
 class SCH_Plugin {
 
-	/**
-	 * @var SCH_Plugin|null
-	 */
 	private static $instance = null;
 
-	/**
-	 * @return SCH_Plugin
-	 */
 	public static function instance() {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -27,9 +21,6 @@ class SCH_Plugin {
 		return self::$instance;
 	}
 
-	/**
-	 * Boot modules.
-	 */
 	public function init() {
 		load_plugin_textdomain( 'single-client-hub', false, dirname( SCH_PLUGIN_BASENAME ) . '/languages' );
 
@@ -52,21 +43,12 @@ class SCH_Plugin {
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_subscription_flag' ) );
 	}
 
-	/**
-	 * Register WC payment gateways (modules).
-	 *
-	 * @param array $gateways Gateways.
-	 * @return array
-	 */
 	public function register_gateways( $gateways ) {
 		$gateways[] = 'SCH_Gateway_Bank_Invoice';
 		$gateways[] = 'SCH_Gateway_Installment';
 		return $gateways;
 	}
 
-	/**
-	 * Checkbox on classic checkout.
-	 */
 	public function checkout_subscription_checkbox() {
 		$checked = ( WC()->session && 'yes' === WC()->session->get( 'sch_create_subscription' ) );
 		woocommerce_form_field(
@@ -80,11 +62,6 @@ class SCH_Plugin {
 		);
 	}
 
-	/**
-	 * Persist flag on order.
-	 *
-	 * @param int $order_id Order ID.
-	 */
 	public function save_subscription_flag( $order_id ) {
 		$flag = ! empty( $_POST['sch_create_subscription'] ) ? 'yes' : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( WC()->session && 'yes' === WC()->session->get( 'sch_create_subscription' ) ) {
@@ -98,13 +75,6 @@ class SCH_Plugin {
 		}
 	}
 
-	/**
-	 * After checkout — create subscription if flagged.
-	 *
-	 * @param int      $order_id Order ID.
-	 * @param array    $posted   Posted data.
-	 * @param WC_Order $order    Order.
-	 */
 	public function maybe_create_subscription_from_checkout( $order_id, $posted, $order ) {
 		if ( ! $order instanceof WC_Order ) {
 			$order = wc_get_order( $order_id );
@@ -129,32 +99,14 @@ class SCH_Plugin {
 		}
 	}
 
-	/**
-	 * Test mode enabled?
-	 *
-	 * @return bool
-	 */
 	public static function is_test_mode() {
 		return 'yes' === get_option( 'sch_test_mode', 'yes' );
 	}
 
-	/**
-	 * Mask sensitive data in logs?
-	 *
-	 * @return bool
-	 */
 	public static function should_mask() {
 		return 'yes' === get_option( 'sch_mask_sensitive', 'yes' );
 	}
 
-	/**
-	 * Log business event into sch_events.
-	 *
-	 * @param string $code    Event code.
-	 * @param string $label   Human label.
-	 * @param array  $context Context (user_id, order_id, subscription_id, payload…).
-	 * @return int|false
-	 */
 	public static function log_event( $code, $label, array $context = array() ) {
 		global $wpdb;
 
