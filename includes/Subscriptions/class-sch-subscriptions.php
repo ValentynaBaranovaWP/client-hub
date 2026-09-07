@@ -7,14 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Subscriptions
- */
 class SCH_Subscriptions {
 
-	/**
-	 * Init.
-	 */
 	public static function init() {
 		add_action( 'init', array( __CLASS__, 'add_endpoint' ) );
 		add_filter( 'woocommerce_account_menu_items', array( __CLASS__, 'menu_item' ) );
@@ -24,19 +18,10 @@ class SCH_Subscriptions {
 		add_action( 'wp_ajax_sch_cancel_subscription', array( __CLASS__, 'ajax_cancel' ) );
 	}
 
-	/**
-	 * Endpoint.
-	 */
 	public static function add_endpoint() {
 		add_rewrite_endpoint( 'sch-subscriptions', EP_ROOT | EP_PAGES );
 	}
 
-	/**
-	 * Menu.
-	 *
-	 * @param array $items Items.
-	 * @return array
-	 */
 	public static function menu_item( $items ) {
 		$new = array();
 		foreach ( $items as $key => $label ) {
@@ -51,12 +36,6 @@ class SCH_Subscriptions {
 		return $new;
 	}
 
-	/**
-	 * Create subscription from paid/checkout order.
-	 *
-	 * @param WC_Order $order Order.
-	 * @return int|false
-	 */
 	public static function create_from_order( WC_Order $order ) {
 		global $wpdb;
 
@@ -119,12 +98,6 @@ class SCH_Subscriptions {
 		return $sub_id;
 	}
 
-	/**
-	 * Get subscriptions for user.
-	 *
-	 * @param int $user_id User.
-	 * @return array
-	 */
 	public static function get_for_user( $user_id ) {
 		global $wpdb;
 		return $wpdb->get_results(
@@ -136,12 +109,6 @@ class SCH_Subscriptions {
 		) ?: array();
 	}
 
-	/**
-	 * Get by ID.
-	 *
-	 * @param int $id ID.
-	 * @return array|null
-	 */
 	public static function get( $id ) {
 		global $wpdb;
 		$row = $wpdb->get_row(
@@ -154,14 +121,6 @@ class SCH_Subscriptions {
 		return $row ?: null;
 	}
 
-	/**
-	 * Update status.
-	 *
-	 * @param int    $id     ID.
-	 * @param string $status Status.
-	 * @param array  $extra  Extra columns.
-	 * @return bool
-	 */
 	public static function update_status( $id, $status, array $extra = array() ) {
 		global $wpdb;
 		$data = array_merge(
@@ -190,13 +149,6 @@ class SCH_Subscriptions {
 		);
 	}
 
-	/**
-	 * Pause.
-	 *
-	 * @param int $user_id User.
-	 * @param int $id      Sub ID.
-	 * @return bool|WP_Error
-	 */
 	public static function pause( $user_id, $id ) {
 		$sub = self::get( $id );
 		if ( ! $sub || (int) $sub['user_id'] !== (int) $user_id ) {
@@ -221,13 +173,6 @@ class SCH_Subscriptions {
 		return true;
 	}
 
-	/**
-	 * Resume.
-	 *
-	 * @param int $user_id User.
-	 * @param int $id      Sub ID.
-	 * @return bool|WP_Error
-	 */
 	public static function resume( $user_id, $id ) {
 		$sub = self::get( $id );
 		if ( ! $sub || (int) $sub['user_id'] !== (int) $user_id ) {
@@ -256,13 +201,6 @@ class SCH_Subscriptions {
 		return true;
 	}
 
-	/**
-	 * Cancel.
-	 *
-	 * @param int $user_id User.
-	 * @param int $id      Sub ID.
-	 * @return bool|WP_Error
-	 */
 	public static function cancel( $user_id, $id ) {
 		$sub = self::get( $id );
 		if ( ! $sub || (int) $sub['user_id'] !== (int) $user_id ) {
@@ -287,18 +225,12 @@ class SCH_Subscriptions {
 		return true;
 	}
 
-	/**
-	 * Account page.
-	 */
 	public static function render_account_page() {
 		$user_id = get_current_user_id();
 		$subs    = self::get_for_user( $user_id );
 		include SCH_PLUGIN_DIR . 'templates/subscriptions.php';
 	}
 
-	/**
-	 * AJAX helpers.
-	 */
 	public static function ajax_pause() {
 		check_ajax_referer( 'sch_hub', 'nonce' );
 		$result = self::pause( get_current_user_id(), isset( $_POST['subscription_id'] ) ? (int) $_POST['subscription_id'] : 0 );
@@ -308,9 +240,6 @@ class SCH_Subscriptions {
 		wp_send_json_success();
 	}
 
-	/**
-	 * Resume AJAX.
-	 */
 	public static function ajax_resume() {
 		check_ajax_referer( 'sch_hub', 'nonce' );
 		$result = self::resume( get_current_user_id(), isset( $_POST['subscription_id'] ) ? (int) $_POST['subscription_id'] : 0 );
@@ -320,9 +249,6 @@ class SCH_Subscriptions {
 		wp_send_json_success();
 	}
 
-	/**
-	 * Cancel AJAX.
-	 */
 	public static function ajax_cancel() {
 		check_ajax_referer( 'sch_hub', 'nonce' );
 		$result = self::cancel( get_current_user_id(), isset( $_POST['subscription_id'] ) ? (int) $_POST['subscription_id'] : 0 );
@@ -332,12 +258,6 @@ class SCH_Subscriptions {
 		wp_send_json_success();
 	}
 
-	/**
-	 * Status label.
-	 *
-	 * @param string $status Status.
-	 * @return string
-	 */
 	public static function status_label( $status ) {
 		$map = array(
 			'active'    => __( 'Active', 'single-client-hub' ),
