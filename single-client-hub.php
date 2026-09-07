@@ -85,9 +85,6 @@ function sch_activate() {
 }
 register_activation_hook( __FILE__, 'sch_activate' );
 
-/**
- * Deactivation: clear cron, keep data.
- */
 function sch_deactivate() {
 	SCH_Subscription_Cron::unschedule();
 	flush_rewrite_rules();
