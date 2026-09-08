@@ -131,10 +131,17 @@ class SCH_Gateway_Bank_Invoice extends WC_Payment_Gateway {
 		if ( ! $order ) {
 			return;
 		}
+		$amount = wp_strip_all_tags(
+			$order->get_formatted_order_total()
+		);
 		$tpl = get_option( 'sch_bank_invoice_details', '' );
 		$text = str_replace(
 			array( '{order_number}', '{order_id}', '{amount}' ),
-			array( $order->get_order_number(), (string) $order->get_id(), $order->get_formatted_order_total() ),
+			array(
+				$order->get_order_number(),
+				(string) $order->get_id(),
+				$amount,
+			),
 			$tpl
 		);
 		$invoice_id = $order->get_meta( '_sch_invoice_id' );
