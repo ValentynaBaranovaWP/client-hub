@@ -7,27 +7,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Account_Actions
- */
 class SCH_Account_Actions {
 
-	/**
-	 * Init hooks on My Account order list.
-	 */
 	public static function init() {
 		add_filter( 'woocommerce_my_account_my_orders_actions', array( __CLASS__, 'order_actions' ), 10, 2 );
 		add_action( 'woocommerce_view_order', array( __CLASS__, 'view_order_buttons' ), 20 );
 		add_action( 'template_redirect', array( __CLASS__, 'handle_query_actions' ) );
 	}
 
-	/**
-	 * Add actions to orders table.
-	 *
-	 * @param array    $actions Actions.
-	 * @param WC_Order $order   Order.
-	 * @return array
-	 */
 	public static function order_actions( $actions, $order ) {
 		$actions['sch_reorder'] = array(
 			'url'  => wp_nonce_url(
@@ -62,11 +49,6 @@ class SCH_Account_Actions {
 		return $actions;
 	}
 
-	/**
-	 * Buttons on single order view.
-	 *
-	 * @param int $order_id Order ID.
-	 */
 	public static function view_order_buttons( $order_id ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
@@ -110,9 +92,6 @@ class SCH_Account_Actions {
 		echo '</p>';
 	}
 
-	/**
-	 * Handle GET actions.
-	 */
 	public static function handle_query_actions() {
 		if ( empty( $_GET['sch_action'] ) || empty( $_GET['order_id'] ) ) { // phpcs:ignore
 			return;
@@ -147,13 +126,6 @@ class SCH_Account_Actions {
 		}
 	}
 
-	/**
-	 * Fill cart from order (draft reorder).
-	 *
-	 * @param int $order_id Order.
-	 * @param int $user_id  User.
-	 * @return array|WP_Error
-	 */
 	public static function reorder( $order_id, $user_id ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order || (int) $order->get_user_id() !== (int) $user_id ) {
@@ -199,13 +171,6 @@ class SCH_Account_Actions {
 		);
 	}
 
-	/**
-	 * Same as reorder but flag subscription at checkout.
-	 *
-	 * @param int $order_id Order.
-	 * @param int $user_id  User.
-	 * @return array|WP_Error
-	 */
 	public static function convert_to_subscription_cart( $order_id, $user_id ) {
 		$result = self::reorder( $order_id, $user_id );
 		if ( is_wp_error( $result ) ) {
