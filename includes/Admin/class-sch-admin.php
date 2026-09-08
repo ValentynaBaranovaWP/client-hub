@@ -70,7 +70,7 @@ class SCH_Admin {
 			register_setting( 'sch_settings', $key, $args );
 		}
 
-		// Unchecked boxes are absent from POST — force "no" when settings form saved.
+
 		if ( isset( $_POST['option_page'] ) && 'sch_settings' === $_POST['option_page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			foreach ( $checkboxes as $key ) {
 				if ( ! isset( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
