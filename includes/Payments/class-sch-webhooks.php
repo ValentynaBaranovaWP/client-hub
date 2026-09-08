@@ -7,21 +7,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Webhooks
- */
+
 class SCH_Webhooks {
 
-	/**
-	 * Init.
-	 */
 	public static function init() {
 		add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
 	}
 
-	/**
-	 * Routes.
-	 */
 	public static function register_routes() {
 		register_rest_route(
 			'sch/v1',
@@ -46,12 +38,6 @@ class SCH_Webhooks {
 		);
 	}
 
-	/**
-	 * Incoming webhook.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return WP_REST_Response|WP_Error
-	 */
 	public static function handle_webhook( WP_REST_Request $request ) {
 		$gateway = sanitize_key( $request['gateway'] );
 		$body    = $request->get_json_params();
@@ -106,12 +92,6 @@ class SCH_Webhooks {
 		return rest_ensure_response( $result );
 	}
 
-	/**
-	 * Admin simulate.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return WP_REST_Response|WP_Error
-	 */
 	public static function simulate( WP_REST_Request $request ) {
 		if ( ! SCH_Plugin::is_test_mode() ) {
 			return new WP_Error( 'sch_test_off', __( 'Enable test mode', 'single-client-hub' ), array( 'status' => 400 ) );
@@ -156,14 +136,6 @@ class SCH_Webhooks {
 		return rest_ensure_response( $result );
 	}
 
-	/**
-	 * Apply business logic for webhook event.
-	 *
-	 * @param string $gateway Gateway id.
-	 * @param array  $body    Payload.
-	 * @param bool   $sim     Simulated.
-	 * @return array|WP_Error
-	 */
 	public static function process_event( $gateway, array $body, $sim = false ) {
 		$order_id = isset( $body['order_id'] ) ? (int) $body['order_id'] : 0;
 		$event    = sanitize_key( $body['event'] ?? '' );
