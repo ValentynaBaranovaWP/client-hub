@@ -7,14 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Payment_Logger
- */
 class SCH_Payment_Logger {
 
-	/**
-	 * Init retention cron cleanup.
-	 */
 	public static function init() {
 		add_action( 'sch_daily_cleanup', array( __CLASS__, 'cleanup' ) );
 		if ( ! wp_next_scheduled( 'sch_daily_cleanup' ) ) {
@@ -22,12 +16,6 @@ class SCH_Payment_Logger {
 		}
 	}
 
-	/**
-	 * Write log row.
-	 *
-	 * @param array $args Arguments.
-	 * @return int|false
-	 */
 	public static function log( array $args ) {
 		global $wpdb;
 
@@ -68,9 +56,6 @@ class SCH_Payment_Logger {
 		return $ok ? (int) $wpdb->insert_id : false;
 	}
 
-	/**
-	 * Delete old logs.
-	 */
 	public static function cleanup() {
 		global $wpdb;
 		$days = max( 1, (int) get_option( 'sch_log_retention_days', 90 ) );
@@ -90,13 +75,6 @@ class SCH_Payment_Logger {
 		);
 	}
 
-	/**
-	 * Recent logs.
-	 *
-	 * @param int   $limit Limit.
-	 * @param array $args  Filters.
-	 * @return array
-	 */
 	public static function get_logs( $limit = 50, array $args = array() ) {
 		global $wpdb;
 		$table = SCH_Schema::table( 'payment_logs' );
