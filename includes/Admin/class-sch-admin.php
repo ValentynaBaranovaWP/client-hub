@@ -7,23 +7,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Admin
- */
 class SCH_Admin {
 
-	/**
-	 * Init.
-	 */
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
 	}
 
-	/**
-	 * Menu under WooCommerce.
-	 */
 	public static function menu() {
 		add_submenu_page(
 			'woocommerce',
@@ -35,9 +26,6 @@ class SCH_Admin {
 		);
 	}
 
-	/**
-	 * Register options.
-	 */
 	public static function register_settings() {
 		$checkboxes = array(
 			'sch_test_mode',
@@ -92,19 +80,10 @@ class SCH_Admin {
 		}
 	}
 
-	/**
-	 * @param mixed $value Raw.
-	 * @return string
-	 */
 	public static function sanitize_checkbox( $value ) {
 		return ( 'yes' === $value || '1' === $value || true === $value ) ? 'yes' : 'no';
 	}
 
-	/**
-	 * Assets.
-	 *
-	 * @param string $hook Hook.
-	 */
 	public static function assets( $hook ) {
 		if ( false === strpos( $hook, 'sch-hub' ) ) {
 			return;
@@ -126,9 +105,6 @@ class SCH_Admin {
 		);
 	}
 
-	/**
-	 * Render settings + tabs.
-	 */
 	public static function render_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
@@ -168,9 +144,6 @@ class SCH_Admin {
 		echo '</div>';
 	}
 
-	/**
-	 * Settings form.
-	 */
 	private static function render_settings_tab() {
 		?>
 		<form method="post" action="options.php" class="sch-settings-form">
