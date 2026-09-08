@@ -7,14 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Admin_Payments
- */
 class SCH_Admin_Payments {
 
-	/**
-	 * Payment logs table.
-	 */
 	public static function render_logs() {
 		$gateway = isset( $_GET['gateway'] ) ? sanitize_key( wp_unslash( $_GET['gateway'] ) ) : ''; // phpcs:ignore
 		$order_id = isset( $_GET['order_id'] ) ? (int) $_GET['order_id'] : 0; // phpcs:ignore
@@ -70,9 +64,6 @@ class SCH_Admin_Payments {
 		echo '</tbody></table>';
 	}
 
-	/**
-	 * Business events table.
-	 */
 	public static function render_events() {
 		global $wpdb;
 		$rows = $wpdb->get_results(
