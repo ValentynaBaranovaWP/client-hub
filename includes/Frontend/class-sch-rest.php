@@ -7,21 +7,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_REST
- */
 class SCH_REST {
 
-	/**
-	 * Init.
-	 */
 	public static function init() {
 		add_action( 'rest_api_init', array( __CLASS__, 'routes' ) );
 	}
 
-	/**
-	 * Routes.
-	 */
 	public static function routes() {
 		register_rest_route(
 			'sch/v1',
@@ -109,11 +100,6 @@ class SCH_REST {
 		);
 	}
 
-	/**
-	 * Cart snapshot.
-	 *
-	 * @return WP_REST_Response
-	 */
 	public static function cart() {
 		self::load_cart();
 
@@ -155,11 +141,6 @@ class SCH_REST {
 		);
 	}
 
-	/**
-	 * Account snapshot: orders + subscriptions.
-	 *
-	 * @return WP_REST_Response
-	 */
 	public static function account() {
 		$user_id = get_current_user_id();
 		$orders  = wc_get_orders(
@@ -207,12 +188,6 @@ class SCH_REST {
 		);
 	}
 
-	/**
-	 * Apply coupon.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return WP_REST_Response|WP_Error
-	 */
 	public static function apply_coupon( WP_REST_Request $request ) {
 		$code = sanitize_text_field( $request->get_param( 'code' ) );
 		if ( ! $code ) {
@@ -241,12 +216,6 @@ class SCH_REST {
 		return self::cart();
 	}
 
-	/**
-	 * Remove coupon.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return WP_REST_Response
-	 */
 	public static function remove_coupon( WP_REST_Request $request ) {
 		$code = sanitize_text_field( $request->get_param( 'code' ) );
 		if ( null === WC()->cart ) {
@@ -260,12 +229,6 @@ class SCH_REST {
 		return self::cart();
 	}
 
-	/**
-	 * Remove a line item from the cart.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return WP_REST_Response|WP_Error
-	 */
 	public static function remove_cart_item( WP_REST_Request $request ) {
 		$cart_item_key = sanitize_text_field( $request->get_param( 'cart_item_key' ) );
 		if ( ! $cart_item_key ) {
@@ -297,9 +260,6 @@ class SCH_REST {
 		return self::cart();
 	}
 
-	/**
-	 * Load WooCommerce cart from session (REST-safe).
-	 */
 	private static function load_cart() {
 		if ( null === WC()->cart ) {
 			wc_load_cart();
@@ -310,9 +270,6 @@ class SCH_REST {
 		}
 	}
 
-	/**
-	 * Save cart session after mutations.
-	 */
 	private static function persist_cart_session() {
 		if ( WC()->cart ) {
 			WC()->cart->set_session();
@@ -320,12 +277,6 @@ class SCH_REST {
 		}
 	}
 
-	/**
-	 * Reorder via REST.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return WP_REST_Response|WP_Error
-	 */
 	public static function reorder( WP_REST_Request $request ) {
 		$order_id = (int) $request->get_param( 'order_id' );
 		$result   = SCH_Account_Actions::reorder( $order_id, get_current_user_id() );
@@ -335,12 +286,6 @@ class SCH_REST {
 		return rest_ensure_response( $result );
 	}
 
-	/**
-	 * Subscribe flow via REST.
-	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return WP_REST_Response|WP_Error
-	 */
 	public static function subscribe( WP_REST_Request $request ) {
 		$order_id = (int) $request->get_param( 'order_id' );
 		$result   = SCH_Account_Actions::convert_to_subscription_cart( $order_id, get_current_user_id() );
