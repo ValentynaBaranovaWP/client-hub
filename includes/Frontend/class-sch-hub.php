@@ -7,9 +7,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Hub
- */
 class SCH_Hub {
 
 	private static $trigger_rendered = false;
