@@ -12,16 +12,8 @@ defined( 'ABSPATH' ) || exit;
  */
 class SCH_Hub {
 
-	/**
-	 * Whether the trigger button was already printed this request.
-	 *
-	 * @var bool
-	 */
 	private static $trigger_rendered = false;
 
-	/**
-	 * Init.
-	 */
 	public static function init() {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'assets' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'render_panel' ) );
@@ -32,13 +24,9 @@ class SCH_Hub {
 		add_filter( 'widget_display_callback', array( __CLASS__, 'replace_cart_widget' ), 10, 3 );
 		add_filter( 'woocommerce_add_to_cart_fragments', array( __CLASS__, 'cart_fragments' ) );
 
-		// Classic Storefront header cart slot.
 		add_action( 'after_setup_theme', array( __CLASS__, 'replace_storefront_cart' ), 20 );
 	}
 
-	/**
-	 * Assets.
-	 */
 	public static function assets() {
 		if ( is_admin() ) {
 			return;
@@ -91,22 +79,10 @@ class SCH_Hub {
 		);
 	}
 
-	/**
-	 * Shortcode [sch_hub_trigger] — place in theme header instead of mini-cart.
-	 *
-	 * @return string
-	 */
 	public static function shortcode_trigger() {
 		return self::get_trigger_html();
 	}
 
-	/**
-	 * Replace WooCommerce Mini Cart block with hub trigger.
-	 *
-	 * @param string $content Block HTML.
-	 * @param array  $block   Parsed block.
-	 * @return string
-	 */
 	public static function replace_mini_cart_block( $content, $block ) {
 		if ( empty( $block['blockName'] ) || 'woocommerce/mini-cart' !== $block['blockName'] ) {
 			return $content;
@@ -118,14 +94,6 @@ class SCH_Hub {
 		return $html ? $html : $content;
 	}
 
-	/**
-	 * Replace classic WooCommerce Cart widget with hub trigger.
-	 *
-	 * @param array     $instance Widget settings.
-	 * @param WP_Widget $widget   Widget instance.
-	 * @param array     $args     Sidebar args.
-	 * @return array|false
-	 */
 	public static function replace_cart_widget( $instance, $widget, $args ) {
 		if ( ! $instance || ! is_object( $widget ) ) {
 			return $instance;
@@ -144,7 +112,6 @@ class SCH_Hub {
 			return false;
 		}
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup built in template.
 		echo isset( $args['before_widget'] ) ? $args['before_widget'] : '';
 		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo isset( $args['after_widget'] ) ? $args['after_widget'] : '';
@@ -152,9 +119,6 @@ class SCH_Hub {
 		return false;
 	}
 
-	/**
-	 * Swap Storefront header cart for hub trigger when that theme is active.
-	 */
 	public static function replace_storefront_cart() {
 		if ( ! function_exists( 'storefront_header_cart' ) ) {
 			return;
@@ -166,20 +130,11 @@ class SCH_Hub {
 		add_action( 'storefront_header', array( __CLASS__, 'print_trigger' ), 60 );
 	}
 
-	/**
-	 * Echo trigger (for theme action hooks).
-	 */
 	public static function print_trigger() {
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo self::get_trigger_html();
 	}
 
-	/**
-	 * Build trigger HTML once per request.
-	 *
-	 * @param array $args Optional. `floating` => bool.
-	 * @return string
-	 */
+
 	public static function get_trigger_html( $args = array() ) {
 		if ( self::$trigger_rendered ) {
 			return '';
@@ -196,12 +151,6 @@ class SCH_Hub {
 		return (string) ob_get_clean();
 	}
 
-	/**
-	 * Keep badge in sync with WooCommerce cart fragments (classic AJAX add-to-cart).
-	 *
-	 * @param array $fragments Fragments.
-	 * @return array
-	 */
 	public static function cart_fragments( $fragments ) {
 		$count = ( WC()->cart ) ? (int) WC()->cart->get_cart_contents_count() : 0;
 		ob_start();
@@ -214,9 +163,6 @@ class SCH_Hub {
 		return $fragments;
 	}
 
-	/**
-	 * Panel (+ floating trigger fallback) in footer.
-	 */
 	public static function render_panel() {
 		if ( is_admin() ) {
 			return;
