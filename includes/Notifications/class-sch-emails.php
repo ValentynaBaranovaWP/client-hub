@@ -7,25 +7,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Emails
- */
 class SCH_Emails {
 
-	/**
-	 * Init (placeholder for future WC_Email classes).
-	 */
 	public static function init() {
 		// Hooks are called explicitly from other modules.
 	}
 
-	/**
-	 * Status change email.
-	 *
-	 * @param WC_Order $order Order.
-	 * @param string   $from  From.
-	 * @param string   $to    To.
-	 */
 	public static function send_status_change( WC_Order $order, $from, $to ) {
 		if ( 'yes' !== get_option( 'sch_email_status_change', 'yes' ) ) {
 			return;
@@ -36,7 +23,6 @@ class SCH_Emails {
 		}
 
 		$subject = sprintf(
-			/* translators: 1: site 2: order number */
 			__( '[%1$s] Order #%2$s status changed', 'single-client-hub' ),
 			wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 			$order->get_order_number()
@@ -54,12 +40,6 @@ class SCH_Emails {
 		self::mail( $email, $subject, $message );
 	}
 
-	/**
-	 * Coupon issued.
-	 *
-	 * @param WC_Order $order Order.
-	 * @param string   $code  Code.
-	 */
 	public static function send_coupon_issued( WC_Order $order, $code ) {
 		if ( 'yes' !== get_option( 'sch_email_coupon', 'yes' ) ) {
 			return;
@@ -70,7 +50,6 @@ class SCH_Emails {
 		}
 
 		$subject = sprintf(
-			/* translators: %s: site name */
 			__( '[%s] You received a discount coupon', 'single-client-hub' ),
 			wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES )
 		);
@@ -86,12 +65,6 @@ class SCH_Emails {
 		self::mail( $email, $subject, $message );
 	}
 
-	/**
-	 * Failed renewal.
-	 *
-	 * @param WC_Order $order Order.
-	 * @param array    $sub   Subscription row.
-	 */
 	public static function send_failed_renewal( WC_Order $order, array $sub ) {
 		if ( 'yes' !== get_option( 'sch_email_failed_renewal', 'yes' ) ) {
 			return;
@@ -106,7 +79,6 @@ class SCH_Emails {
 		}
 
 		$subject = sprintf(
-			/* translators: %s: site */
 			__( '[%s] Subscription renewal failed', 'single-client-hub' ),
 			wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES )
 		);
@@ -122,14 +94,6 @@ class SCH_Emails {
 		self::mail( $email, $subject, $message );
 	}
 
-	/**
-	 * Webhook event notice (customer-facing for key events).
-	 *
-	 * @param WC_Order $order   Order.
-	 * @param string   $gateway Gateway.
-	 * @param string   $event   Event.
-	 * @param array    $body    Body.
-	 */
 	public static function send_webhook_event( WC_Order $order, $gateway, $event, array $body ) {
 		if ( 'yes' !== get_option( 'sch_email_webhook', 'yes' ) ) {
 			return;
@@ -146,7 +110,6 @@ class SCH_Emails {
 		}
 
 		$subject = sprintf(
-			/* translators: 1: site 2: event */
 			__( '[%1$s] Payment update: %2$s', 'single-client-hub' ),
 			wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 			$event
@@ -165,13 +128,6 @@ class SCH_Emails {
 		self::mail( $email, $subject, $message );
 	}
 
-	/**
-	 * Render template to string.
-	 *
-	 * @param string $template Template file.
-	 * @param array  $vars     Vars.
-	 * @return string
-	 */
 	private static function render( $template, array $vars ) {
 		$path = SCH_PLUGIN_DIR . 'templates/emails/' . $template;
 		if ( ! is_readable( $path ) ) {
@@ -183,13 +139,6 @@ class SCH_Emails {
 		return ob_get_clean();
 	}
 
-	/**
-	 * wp_mail HTML wrapper.
-	 *
-	 * @param string $to      To.
-	 * @param string $subject Subject.
-	 * @param string $message HTML body.
-	 */
 	private static function mail( $to, $subject, $message ) {
 		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
 		wp_mail( $to, $subject, $message, $headers );
