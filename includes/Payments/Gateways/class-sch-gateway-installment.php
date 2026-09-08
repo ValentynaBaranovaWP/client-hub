@@ -7,14 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class SCH_Gateway_Installment
- */
 class SCH_Gateway_Installment extends WC_Payment_Gateway {
 
-	/**
-	 * Constructor.
-	 */
 	public function __construct() {
 		$this->id                 = 'sch_installment';
 		$this->method_title       = __( 'SCH: Installment / Hold', 'single-client-hub' );
@@ -32,9 +26,6 @@ class SCH_Gateway_Installment extends WC_Payment_Gateway {
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 	}
 
-	/**
-	 * Settings.
-	 */
 	public function init_form_fields() {
 		$this->form_fields = array(
 			'enabled'     => array(
@@ -56,9 +47,6 @@ class SCH_Gateway_Installment extends WC_Payment_Gateway {
 		);
 	}
 
-	/**
-	 * Checkout fields: choose saved method or mock card last4.
-	 */
 	public function payment_fields() {
 		if ( $this->description ) {
 			echo wp_kses_post( wpautop( wptexturize( $this->description ) ) );
@@ -105,12 +93,6 @@ class SCH_Gateway_Installment extends WC_Payment_Gateway {
 		echo '</fieldset>';
 	}
 
-	/**
-	 * Process hold authorization.
-	 *
-	 * @param int $order_id Order ID.
-	 * @return array
-	 */
 	public function process_payment( $order_id ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
@@ -177,14 +159,6 @@ class SCH_Gateway_Installment extends WC_Payment_Gateway {
 		);
 	}
 
-	/**
-	 * Mock authorize.
-	 *
-	 * @param WC_Order $order    Order.
-	 * @param string   $last4    Last4.
-	 * @param string   $saved_id Saved method.
-	 * @return array
-	 */
 	private function authorize_hold( WC_Order $order, $last4, $saved_id ) {
 		$request = array(
 			'order_id'         => $order->get_id(),
